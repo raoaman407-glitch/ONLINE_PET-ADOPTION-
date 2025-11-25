@@ -1,49 +1,54 @@
 import core.Pet;
 import core.User;
 import core.Adopter;
-import core.Admin;
-import core.NotificationThread;
 import core.Shelter;
+import core.NotificationThread;
+import database.PetDAO;
+import database.UserDAO;
 
 public class petAdoption {
     public static void main(String[] args) {
 
-        // Create Shelter
-        Shelter shelter = new Shelter("Happy Paws Shelter", "Delhi");
+        // Using DAO for database operations
+        PetDAO petDAO = new PetDAO();
+        UserDAO userDAO = new UserDAO();
 
-        // Create Pets
-        Pet p1 = new Pet(101, "Tommy", "Dog", "Available");
-        Pet p2 = new Pet(102, "Lucy", "Cat", "Available");
+        // Creating Users
+        User adopter = new Adopter("Rahul", "rahul@example.com");
+        User shelter = new Shelter("Happy Paws Shelter", "shelter@gmail.com");
 
-        // Create Adopter
-        Adopter adopter = new Adopter("Rahul", "rahul@example.com");
+        // Adding Users to DAO
+        userDAO.add(adopter);
+        userDAO.add(shelter);
 
-        // Create Admin
-        Admin admin = new Admin("Priya", "priya@admin.com");
+        // Creating Pets
+        Pet pet1 = new Pet(101, "Tommy", "Dog", "Available");
+        Pet pet2 = new Pet(102, "Milo", "Cat", "Available");
 
-        // Display Data
-        System.out.println("\n=== Shelter Details ===");
-        shelter.showDetails();
+        // Adding Pets to DAO
+        petDAO.add(pet1);
+        petDAO.add(pet2);
 
-        System.out.println("\n=== Pets Available ===");
-        p1.showPetDetails();
-        p2.showPetDetails();
-
+        // Show Data from DAO
         System.out.println("\n=== Users in System ===");
-        adopter.showDetails();
-        admin.showDetails();
+        for (User u : userDAO.getAllUsers()) {
+            u.showDetails();
+        }
 
-        // Adopter applies for a pet
-        adopter.applyForPet(p1);
+        System.out.println("\n=== Pets in System ===");
+        for (Pet p : petDAO.getAllPets()) {
+            p.showPetDetails();
+        }
 
-        // Admin approves
-        admin.approvePet(p1);
+        // Adoption simulation
+        ((Adopter) adopter).applyForPet(pet1);
+        ((Shelter) shelter).listPet(pet1);
 
-        // Notification Thread
-        NotificationThread notification =
-                new NotificationThread("Your adoption request for " + p1.getName() + " has been approved!");
-        notification.start();
+        // Notification Thread Start
+        NotificationThread t = new NotificationThread("Pet Adoption Request Received");
+        t.start();
     }
 }
+
 
 
